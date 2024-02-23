@@ -12,6 +12,8 @@ def index():
 def qr_data():
     data = request.form['qr_data']
     print("QR Code Data:", data)
+
+    append_to_excel(data)
     # hadling data here
     return 'Received'
 
@@ -33,6 +35,6 @@ def append_to_excel(data):
 if __name__ == '__main__':
     certfile = os.path.join(os.path.dirname(__file__), 'certs/cert.pem')
     keyfile = os.path.join(os.path.dirname(__file__), 'certs/key.pem')
-    app.run(host='0.0.0.0', port=16888, ssl_context=(certfile, keyfile), debug=True)
+    app.run(host='0.0.0.0', port=16888, ssl_context=(certfile, keyfile), debug=False)
 
 
