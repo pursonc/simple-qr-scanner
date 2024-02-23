@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+    <button onclick="startCamera()">Start Camera</button>
+    <div id="interactive" class="viewport" style="display: none;"></div>
+    <video id="camera" style="display: none;"></video>
+    <script>
+        var video = document.getElementById('camera');
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+                    document.getElementById('interactive').style.display = 'block';
+                    document.getElementById('camera').style.display = 'block';
+                    initQuagga();
+                })
+                .catch(function(err) {
+                    console.error('Error accessing camera:', err);
+                });
+        }
+
+        function initQuagga() {
+            Quagga.init({
+                inputStream : {
+                    name : "Live",
+                    type : "LiveStream",
+                    target: document.querySelector('#interactive'),
+                },
+                decoder : {
+                    readers : ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader", "code_39_vin_reader", "codabar_reader", "upc_reader", "upc_e_reader", "i2of5_reader", "2of5_reader", "code_93_reader"],
+                },
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(result) {
+                var code = result.codeResult.code;
+                console.log("Decoded code:", code);
+                // 显示扫描成功信息
+                alert("QR Code scanned successfully: " + code);
+                // 发送到服务器的逻辑
+                sendQRData(code);
+            });
+        }
+
+        function sendQRData(data) {
+            fetch('/qr_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'qr_data=' + encodeURIComponent(data),
+            }).then(response => {
+                if (response.ok) {
+                    console.log('QR data sent successfully');
+                } else {
+                    console.error('Failed to send QR data');
+                }
+            }).catch(error => {
+                console.error('Error sending QR data:', error);
+            });
+        }
+    </script>
+</body>
+</html>
+

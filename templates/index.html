@@ -1,0 +1,93 @@
+<html>
+
+<head>
+    <title>Html-Qrcode Demo</title>
+     
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+        font-size: xx-large;
+    }
+    #qr-reader {
+            width: 100%;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding-block: 10%;
+        }
+
+
+    #qr-reader__scan_region img {
+        width: 60%;
+        height: 60%;
+    }
+
+#qr-reader__dashboard_section_csr > span:nth-child(2) {
+    display: block;
+    font-size: 3rem;
+}
+
+#html5-qrcode-select-camera {
+    display: block;
+    font-size: 2.5rem;
+    margin: 1.5rem auto;
+
+}
+
+    #qr-reader__dashboard button{
+        margin: 2% auto;
+        font-size: 2.5rem;
+        width: 50%;
+        height: 100px;
+    }
+
+
+
+    </style>
+<script src="{{url_for('static', filename='html5-qrcode.min.js')}}"></script>
+<script>
+    function docReady(fn) {
+        // see if DOM is already available
+        if (document.readyState === "complete"
+            || document.readyState === "interactive") {
+            // call on next available tick
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+
+    docReady(function () {
+        var resultContainer = document.getElementById('qr-reader-results');
+        var lastResult, countResults = 0;
+        function onScanSuccess(decodedText, decodedResult) {
+            if (decodedText !== lastResult) {
+                ++countResults;
+                lastResult = decodedText;
+                // Handle on success condition with the decoded message.
+                html5QrcodeScanner.stop();
+                alert(`Scan result ${decodedText}`, decodedResult);
+            }
+        }
+
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { 
+                fps: 10, 
+                qrbox: { width: 500, height: 500 }, 
+                supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+                rememberLastUsedCamera: true, 
+            },
+            );
+        html5QrcodeScanner.render(onScanSuccess);
+    });
+</script>
+</head>
+<body>
+
+    <div id="qr-reader" style="width:100%;height: 100%;"></div>
+    <div id="qr-reader-results"></div>
+</body>
+</html>
