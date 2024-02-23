@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 import os
+from openpyxl import load_workbook, Workbook
 
 app = Flask(__name__)
 
@@ -13,6 +14,21 @@ def qr_data():
     print("QR Code Data:", data)
     # hadling data here
     return 'Received'
+
+def append_to_excel(data):
+    # load Excel file
+    try:
+        wb = load_workbook("qr_data.xlsx")
+    except FileNotFoundError:
+        # file not existed, craete Excel workbook
+        wb = Workbook()
+        
+    # select the workbook
+    ws = wb.active
+    # append to workbook
+    ws.append([data])
+    # save the workbook
+    wb.save("signin.xlsx")
 
 if __name__ == '__main__':
     certfile = os.path.join(os.path.dirname(__file__), 'certs/cert.pem')
