@@ -25,17 +25,17 @@
         height: 60%;
     }
 
-#qr-reader__dashboard_section_csr > span:nth-child(2) {
-    display: block;
-    font-size: 3rem;
-}
+    #qr-reader__dashboard_section_csr > span:nth-child(2) {
+        display: block;
+        font-size: 3rem;
+    }
 
-#html5-qrcode-select-camera {
-    display: block;
-    font-size: 2.5rem;
-    margin: 1.5rem auto;
-
-}
+    #html5-qrcode-select-camera {
+        display: block;
+        font-size: 2.5rem;
+        margin: 1.5rem auto;
+        width: 40%;
+    }
 
     #qr-reader__dashboard button{
         margin: 2% auto;
@@ -68,8 +68,11 @@
                 ++countResults;
                 lastResult = decodedText;
                 // Handle on success condition with the decoded message.
-                html5QrcodeScanner.stop();
-                alert(`Scan result ${decodedText}`, decodedResult);
+                sendQRData(decodedText);
+                
+                alert(`QR data sent successfully! \r\r ${decodedText}`, decodedResult);
+                
+                location.reload();
             }
         }
 
@@ -83,6 +86,25 @@
             );
         html5QrcodeScanner.render(onScanSuccess);
     });
+
+    function sendQRData(data) {
+            fetch('/qr_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'qr_data=' + encodeURIComponent(data),
+            }).then(response => {
+                if (response.ok) {
+                    
+                    console.log('QR data sent successfully');
+                } else {
+                    console.error('Failed to send QR data');
+                }
+            }).catch(error => {
+                console.error('Error sending QR data:', error);
+            });
+        }
 </script>
 </head>
 <body>
