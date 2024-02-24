@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 import os
 from openpyxl import load_workbook, Workbook
+from time import strftime, localtime
 
 app = Flask(__name__)
 
@@ -28,11 +29,12 @@ def append_to_excel(data):
     # select the workbook
     ws = wb.active
     # append to workbook
-    ws.append([data])
+    ws.append([data, strftime('%Y-%m-%d %H:%M:%S',localtime())])
     # save the workbook
-    wb.save("signin.xlsx")
+    wb.save("qr_data.xlsx")
 
 if __name__ == '__main__':
+    # append_to_excel('rest')
     certfile = os.path.join(os.path.dirname(__file__), 'certs/cert.pem')
     keyfile = os.path.join(os.path.dirname(__file__), 'certs/key.pem')
     app.run(host='0.0.0.0', port=16888, ssl_context=(certfile, keyfile), debug=False)
